@@ -123,7 +123,7 @@ class CacheService extends BaseService
             $payload['ttlSeconds'] = $ttlSeconds;
         }
 
-        return $this->client->send('/api/cache/' . $cache . '/entries/' . $key, [
+        return $this->client->send('/api/cache/' . Utils::encodePathSegment($cache) . '/entries/' . Utils::encodePathSegment($key), [
             'method' => 'PATCH',
             'body' => $payload,
             'query' => $query,

@@ -35,6 +35,11 @@ $unsubscribe = $pb->collection('posts')->subscribe('*', function ($event) {
     echo "Realtime event: {$event['action']}\n";
 });
 $pb->realtime->run(); // call poll() instead to integrate with your own loop
+
+// Superuser SQL execution
+$pb->collection('_superusers')->authWithPassword('admin@example.com', 'password');
+$result = $pb->sql->execute('SELECT id, email FROM _superusers LIMIT 1');
+print_r($result);
 ```
 
 ## Services
@@ -42,7 +47,7 @@ $pb->realtime->run(); // call poll() instead to integrate with your own loop
 - `collection(<name>)` – CRUD helpers, auth flows, OTP/OAuth2, impersonation.
 - `collections` – Manage collections, scaffolds, indexes, schema helpers.
 - `files` – File URLs and download tokens.
-- `logs`, `crons`, `backups`, `vectors`, `llmDocuments`, `langchaingo`, `caches`, `graphql`.
+- `logs`, `crons`, `backups`, `vectors`, `llmDocuments`, `langchaingo`, `caches`, `graphql`, `sql`.
 - `realtime` – Server-sent events subscription helper.
 - `pubsub` – WebSocket publish/subscribe.
 - `createBatch()` – Transactional multi-collection writes.

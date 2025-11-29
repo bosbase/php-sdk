@@ -18,6 +18,7 @@ use BosBase\Services\PubSubService;
 use BosBase\Services\RealtimeService;
 use BosBase\Services\RecordService;
 use BosBase\Services\SettingsService;
+use BosBase\Services\SQLService;
 use BosBase\Services\VectorService;
 
 class BosBase
@@ -47,6 +48,7 @@ class BosBase
     public LLMDocumentService $llmDocuments;
     public CacheService $caches;
     public GraphQLService $graphql;
+    public SQLService $sql;
 
     /** @var array<string, RecordService> */
     private array $recordServices = [];
@@ -77,6 +79,7 @@ class BosBase
         $this->llmDocuments = new LLMDocumentService($this);
         $this->caches = new CacheService($this);
         $this->graphql = new GraphQLService($this);
+        $this->sql = new SQLService($this);
     }
 
     public function __destruct()
