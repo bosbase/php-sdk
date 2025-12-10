@@ -14,9 +14,13 @@ use BosBase\Services\HealthService;
 use BosBase\Services\LangChaingoService;
 use BosBase\Services\LLMDocumentService;
 use BosBase\Services\LogService;
+use BosBase\Services\PluginService;
 use BosBase\Services\PubSubService;
+use BosBase\Services\RedisService;
 use BosBase\Services\RealtimeService;
 use BosBase\Services\RecordService;
+use BosBase\Services\ScriptPermissionsService;
+use BosBase\Services\ScriptService;
 use BosBase\Services\SettingsService;
 use BosBase\Services\SQLService;
 use BosBase\Services\VectorService;
@@ -49,6 +53,10 @@ class BosBase
     public CacheService $caches;
     public GraphQLService $graphql;
     public SQLService $sql;
+    public RedisService $redis;
+    public ScriptService $scripts;
+    public ScriptPermissionsService $scriptsPermissions;
+    private PluginService $pluginService;
 
     /** @var array<string, RecordService> */
     private array $recordServices = [];
@@ -80,6 +88,10 @@ class BosBase
         $this->caches = new CacheService($this);
         $this->graphql = new GraphQLService($this);
         $this->sql = new SQLService($this);
+        $this->redis = new RedisService($this);
+        $this->scripts = new ScriptService($this);
+        $this->scriptsPermissions = new ScriptPermissionsService($this);
+        $this->pluginService = new PluginService($this);
     }
 
     public function __destruct()
@@ -183,6 +195,16 @@ class BosBase
         ?array $query = null
     ): string {
         return $this->files->getUrl($record, $filename, $thumb, $token, $download, $query);
+    }
+
+    /**
+     * Proxy a request to the configured plugin endpoint.
+     *
+     * @param array<string, mixed> $options
+     */
+    public function plugins(string $method, string $path, array $options = []): mixed
+    {
+        return $this->pluginService->request($method, $path, $options);
     }
 
     /**

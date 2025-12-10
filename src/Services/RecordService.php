@@ -417,6 +417,126 @@ class RecordService extends BaseCrudService
         return $newClient;
     }
 
+    public function bindCustomToken(
+        string $email,
+        string $password,
+        string $token,
+        ?array $body = null,
+        ?array $query = null,
+        ?array $headers = null
+    ): bool {
+        if ($email === '' || $password === '' || $token === '') {
+            throw new \InvalidArgumentException('email, password and token must be provided.');
+        }
+
+        $payload = $body ? $body : [];
+        $payload['email'] = $payload['email'] ?? $email;
+        $payload['password'] = $payload['password'] ?? $password;
+        $payload['token'] = $payload['token'] ?? $token;
+
+        $this->client->send($this->getBaseCollectionPath() . '/bind-token', [
+            'method' => 'POST',
+            'body' => $payload,
+            'query' => $query,
+            'headers' => $headers,
+        ]);
+
+        return true;
+    }
+
+    public function unbindCustomToken(
+        string $email,
+        string $password,
+        string $token,
+        ?array $body = null,
+        ?array $query = null,
+        ?array $headers = null
+    ): bool {
+        if ($email === '' || $password === '' || $token === '') {
+            throw new \InvalidArgumentException('email, password and token must be provided.');
+        }
+
+        $payload = $body ? $body : [];
+        $payload['email'] = $payload['email'] ?? $email;
+        $payload['password'] = $payload['password'] ?? $password;
+        $payload['token'] = $payload['token'] ?? $token;
+
+        $this->client->send($this->getBaseCollectionPath() . '/unbind-token', [
+            'method' => 'POST',
+            'body' => $payload,
+            'query' => $query,
+            'headers' => $headers,
+        ]);
+
+        return true;
+    }
+
+    public function authWithToken(
+        string $token,
+        ?string $expand = null,
+        ?string $fields = null,
+        ?array $body = null,
+        ?array $query = null,
+        ?array $headers = null
+    ): array {
+        if ($token === '') {
+            throw new \InvalidArgumentException('token must be provided.');
+        }
+
+        $payload = $body ? $body : [];
+        $payload['token'] = $payload['token'] ?? $token;
+
+        $params = $query ? $query : [];
+        if ($expand !== null) {
+            $params['expand'] = $params['expand'] ?? $expand;
+        }
+        if ($fields !== null) {
+            $params['fields'] = $params['fields'] ?? $fields;
+        }
+
+        $data = $this->client->send($this->getBaseCollectionPath() . '/auth-with-token', [
+            'method' => 'POST',
+            'body' => $payload,
+            'query' => $params,
+            'headers' => $headers,
+        ]);
+
+        return $this->authResponse($data ?? []);
+    }
+
+    public function listExternalAuths(
+        string $recordId,
+        ?array $query = null,
+        ?array $headers = null
+    ): array {
+        $filter = $this->client->filter('recordRef = {:id}', ['id' => $recordId]);
+        return $this->client->collection('_externalAuths')->getFullList(
+            filter: $filter,
+            query: $query,
+            headers: $headers
+        );
+    }
+
+    public function unlinkExternalAuth(
+        string $recordId,
+        string $provider,
+        ?array $query = null,
+        ?array $headers = null
+    ): bool {
+        $filter = $this->client->filter(
+            'recordRef = {:recordId} && provider = {:provider}',
+            ['recordId' => $recordId, 'provider' => $provider]
+        );
+        $external = $this->client->collection('_externalAuths')->getFirstListItem(
+            $filter,
+            query: $query,
+            headers: $headers
+        );
+
+        $this->client->collection('_externalAuths')->delete($external['id'] ?? '', query: $query, headers: $headers);
+        return true;
+    }
+
     // ------------------------------------------------------------------
     // Internal helpers
     // ------------------------------------------------------------------

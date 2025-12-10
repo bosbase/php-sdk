@@ -12,6 +12,31 @@ class AuthStore
     /** @var callable[] */
     private array $listeners = [];
 
+    public function getTokenPayload(): ?array
+    {
+        if ($this->token === '') {
+            return null;
+        }
+
+        $parts = explode('.', $this->token);
+        if (count($parts) !== 3) {
+            return null;
+        }
+
+        $payloadPart = $parts[1];
+        $padLen = (4 - (strlen($payloadPart) % 4)) % 4;
+        if ($padLen) {
+            $payloadPart .= str_repeat('=', $padLen);
+        }
+        $decoded = base64_decode($payloadPart, true);
+        if ($decoded === false) {
+            return null;
+        }
+
+        $payload = json_decode($decoded, true);
+        return is_array($payload) ? $payload : null;
+    }
+
     public function getToken(): string
     {
         return $this->token;
@@ -24,28 +49,39 @@ class AuthStore
 
     public function isValid(): bool
     {
-        if ($this->token === '') {
+        $payload = $this->getTokenPayload();
+        if (!$payload || !isset($payload['exp'])) {
             return false;
         }
 
-        $parts = explode('.', $this->token);
-        if (count($parts) !== 3) {
+        return (int) $payload['exp'] > time();
+    }
+
+    public function isSuperuser(): bool
+    {
+        $payload = $this->getTokenPayload();
+        if (!$payload || ($payload['type'] ?? null) !== 'auth') {
             return false;
         }
 
-        $payloadPart = $parts[1] . str_repeat('=', -strlen($parts[1]) % 4);
-        $decoded = base64_decode($payloadPart, true);
-        if ($decoded === false) {
-            return false;
+        $collection = $this->record['collectionId'] ?? ($this->record['collectionName'] ?? null);
+
+        if ($collection === '_superusers' || $collection === '_pbc_2773867675') {
+            return true;
         }
 
-        $payload = json_decode($decoded, true);
-        if (!is_array($payload) || !isset($payload['exp'])) {
-            return false;
+        $collectionId = $payload['collectionId'] ?? null;
+        if ($collectionId === 'pbc_3142635823') {
+            return true;
         }
 
-        $exp = (int) $payload['exp'];
-        return $exp > time();
+        return false;
+    }
+
+    public function isAuthRecord(): bool
+    {
+        $payload = $this->getTokenPayload();
+        return $payload && ($payload['type'] ?? null) === 'auth' && !$this->isSuperuser();
     }
 
     /**

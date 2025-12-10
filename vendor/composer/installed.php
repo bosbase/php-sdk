@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '8435094fc280cee6b538c57c73161924fb0c232c',
+        'reference' => '7abd30799c157e8c56609be4726614f60717f721',
         'name' => 'bosbase/php-sdk',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '8435094fc280cee6b538c57c73161924fb0c232c',
+            'reference' => '7abd30799c157e8c56609be4726614f60717f721',
             'dev_requirement' => false,
         ),
         'myclabs/deep-copy' => array(

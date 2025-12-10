@@ -14,6 +14,13 @@ class BaseService
     {
         $this->client = $client;
     }
+
+    protected function requireSuperuser(): void
+    {
+        if (!$this->client->authStore->isSuperuser()) {
+            throw new \RuntimeException('Superuser authentication is required for this operation.');
+        }
+    }
 }
 
 abstract class BaseCrudService extends BaseService

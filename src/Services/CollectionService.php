@@ -54,6 +54,48 @@ class CollectionService extends BaseCrudService
         ]);
     }
 
+    public function registerSqlTables(
+        array $tables,
+        ?array $query = null,
+        ?array $headers = null
+    ): array {
+        if (!$tables) {
+            throw new \InvalidArgumentException('At least one table must be provided.');
+        }
+
+        $payload = ['tables' => array_values($tables)];
+
+        $data = $this->client->send($this->getBaseCrudPath() . '/sql/tables', [
+            'method' => 'POST',
+            'body' => $payload,
+            'query' => $query,
+            'headers' => $headers,
+        ]);
+
+        return $data ? (array) $data : [];
+    }
+
+    public function importSqlTables(
+        array $tables,
+        ?array $query = null,
+        ?array $headers = null
+    ): array {
+        if (!$tables) {
+            throw new \InvalidArgumentException('At least one table must be provided.');
+        }
+
+        $payload = ['tables' => array_values($tables)];
+
+        $data = $this->client->send($this->getBaseCrudPath() . '/sql/import', [
+            'method' => 'POST',
+            'body' => $payload,
+            'query' => $query,
+            'headers' => $headers,
+        ]);
+
+        return $data ? (array) $data : [];
+    }
+
     public function getScaffolds(
         ?array $body = null,
         ?array $query = null,

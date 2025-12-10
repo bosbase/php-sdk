@@ -47,10 +47,21 @@ print_r($result);
 - `collection(<name>)` – CRUD helpers, auth flows, OTP/OAuth2, impersonation.
 - `collections` – Manage collections, scaffolds, indexes, schema helpers.
 - `files` – File URLs and download tokens.
-- `logs`, `crons`, `backups`, `vectors`, `llmDocuments`, `langchaingo`, `caches`, `graphql`, `sql`.
+- `logs`, `crons`, `backups`, `vectors`, `llmDocuments`, `langchaingo`, `caches`, `graphql`, `sql`, `redis`.
+- `scripts`, `scriptsPermissions` – Manage stored functions and execution permissions (superuser).
+- `plugins(method, path, options)` – Proxy HTTP/SSE/WebSocket requests to configured plugins.
 - `realtime` – Server-sent events subscription helper.
 - `pubsub` – WebSocket publish/subscribe.
 - `createBatch()` – Transactional multi-collection writes.
+
+## Tests
+
+Install dependencies and run the PHPUnit suite from `php-sdk/`:
+
+```bash
+composer install
+vendor/bin/phpunit -c phpunit.xml.dist
+```
 
 ### Hooks
 

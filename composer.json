@@ -1,6 +1,6 @@
 {
     "name": "bosbase/php-sdk",
-    "description": "Official PHP SDK for BosBase APIs (PHP client mirroring the JS SDK).",
+    "description": "Official PHP SDK for BosBase APIs",
     "type": "library",
     "license": "MIT",
     "require": {
